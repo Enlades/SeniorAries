@@ -1,0 +1,9 @@
+{{! Access a property in context with html escape}}
+<h2>{{title}}</h2>
+<p><b>User : </b>{{user}}</p>
+
+<form action="/send" method = "post">
+    Receiver: <input type="text" name="receiver"><br>
+    Body:     <input type="text" name="body"><br>
+  <input type="submit" value="Submit">
+</form>

@@ -1,0 +1,14 @@
+{{! Access a property in context with html escape}}
+<h2>{{title}}</h2>
+<form action="/login" method = "post" enctype="multipart/form-data">
+    <label for="pk">Provide Key:</label>
+
+    <input type="file"
+        id="pkFile" name="pkFile"
+        accept=".txt" required>
+
+    <input type="submit" value="Login">
+</form>
+<form action="/newuser" method = "post">
+    <input type="submit" value="Create">
+</form>

@@ -1,0 +1,13 @@
+{{! Access a property in context with html escape}}
+<h2>{{title}}</h2>
+<p><b>User : </b>{{user}}</p>
+
+<table>
+    <tr><th>From</th><th>Message</th></tr>
+{{#each mails}}
+    <tr>
+        <td>{{this.from}}</td>
+        <td>{{this.message}}</td>
+    </tr>
+{{/each}}
+</table>
