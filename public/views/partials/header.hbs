@@ -1,0 +1,43 @@
+<style>
+  header {
+        height: 40px; text-align: center;
+    }
+
+    .button-group button {
+        margin:auto;
+        justify-content: center;
+        background-color: #69c8e7; /* Green background */
+        border: 1px solid white; /* Green border */
+        color: white; /* White text */
+        padding: 10px 24px; /* Some padding */
+        float: left; /* Float the buttons side by side */
+    }
+
+    /* Clear floats (clearfix hack) */
+    .button-group:after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+
+    /* Add a background color on hover */
+    .button-group button:hover {
+        background-color: #407a8d;
+    }
+
+</style>
+<header>
+    {{#if this.userLoggedIn}}
+    <div class='button-group'>
+        <form action="/compose" method = "post">
+            <button type="submit">Compose</button>
+        </form>
+        <form action="/home" method = "post">
+            <button type="submit">Home</button>
+        </form>
+        <form action="/logout" method = "post">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+    {{/if}}
+</header>

@@ -1,6 +1,7 @@
 const StellarSdk = require('stellar-sdk');
-const IPFS = require('ipfs')
-var bs58 = require('bs58');
+const IPFS = require('ipfs');
+const CryptoJS = require('crypto-js');
+const bs58 = require('bs58');
 
 var pair = StellarSdk.Keypair
   .fromSecret('SCRRAIIYLZTZDQ7FKF7H74QBIRSMUD3VYXIS35DFNV4F4ZWOPRIG32QS');
@@ -20,11 +21,16 @@ var pair = StellarSdk.Keypair
             console.log("IPFS Hash : " + getIpfsHashFromBytes32(Buffer.from(transactionsArray[i].memo, 'base64').toString('hex')));
     
             const fileBuffer = await node.cat(getIpfsHashFromBytes32(Buffer.from(transactionsArray[i].memo, 'base64').toString('hex')));
-    
+
+            await node.get(getIpfsHashFromBytes32(Buffer.from(transactionsArray[i].memo, 'base64').toString('hex')));
+
             console.log('Message :', fileBuffer.toString());
             console.log("");
 
-            structuredMails.push({from:transactionsArray[i].source_account, message:fileBuffer.toString()});
+            var bytes  = CryptoJS.AES.decrypt(fileBuffer.toString(), 'C987AFE9531CBD3AF86EF6D436669');
+            var plaintext = bytes.toString(CryptoJS.enc.Utf8);
+
+            structuredMails.push({from:transactionsArray[i].source_account, message:plaintext});
         }
         
         await node.stop();
@@ -37,11 +43,16 @@ module.exports.CreateAndAddIPFSMail = async function CreateAndAddIPFSMail(mailBo
 
     return new Promise(async function(res, rej){
         let node = await IPFS.create();
+ 
+        // Encrypt
+        var ciphertext = CryptoJS.AES.encrypt(mailBody, 'C987AFE9531CBD3AF86EF6D436669');
 
         const filesAdded = await node.add({
             path: 'someMessage.txt',
-            content: mailBody
+            content: ciphertext.toString()
         });
+
+        await node.pin.add(filesAdded[0].hash);
     
         await node.stop();
     

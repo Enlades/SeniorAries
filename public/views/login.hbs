@@ -1,0 +1,29 @@
+{{#section 'head'}}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Aries E-mail</title>
+    <link href="css/login.css" rel="stylesheet" type="text/css"/>
+{{/section}}
+
+<div class="wrap">
+    <form class="login-form" action="/login" method = "post" enctype="multipart/form-data">
+        <div class="form-header">
+            <h3>Aries</h3>
+            <p>Decentralised Email Service</p>
+        </div>
+            <!--KeySeed Input-->
+            <div class="form-group">
+                <input class="form-input" type="file" id="pkFile" name="pkFile" accept=".txt" required>
+            </div>
+            <!--Login Button-->
+            <div class="form-group">
+                <button class="form-button" type="submit" value="Login">Login</button>
+            </div>
+    </form>
+    <form class="login-form" action="/newuser" method = "post">
+        <div class="form-footer">
+            <button class="form-button" type="submit" value="Login">Create Account</button>
+        </div>
+    </form>
+</div><!--/.wrap-->

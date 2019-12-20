@@ -1,0 +1,20 @@
+{{#section 'head'}}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Aries E-mail</title>
+    <link href="css/home.css" rel="stylesheet" type="text/css"/>
+{{/section}}
+
+<h2>{{title}}</h2>
+<p><b>User : </b>{{user}}</p>
+
+<table>
+    <tr><th>From</th><th>Message</th></tr>
+{{#each mails}}
+    <tr>
+        <td>{{this.from}}</td>
+        <td>{{this.message}}</td>
+    </tr>
+{{/each}}
+</table>

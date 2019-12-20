@@ -1,0 +1,27 @@
+{{#section 'head'}}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Aries E-mail</title>
+    <link href="css/compose.css" rel="stylesheet" type="text/css"/>
+{{/section}}
+{{! Access a property in context with html escape}}
+<h2>{{title}}</h2>
+<p><b>User : </b>{{user}}</p>
+
+ <div class="container">
+  <form action="/send" method="post">
+
+    <label for="alias">Alias</label>
+    <input type="text" id="alias" name="alias" placeholder="Your alias..">
+
+    <label for="receiver">Receiver</label>
+    <input type="text" id="receiver" name="receiver" placeholder="Receiver Public ID..">
+
+    <label for="body">Body</label>
+    <textarea id="body" name="body" placeholder="Write something.." style="height:200px"></textarea>
+
+    <input type="submit" value="Send">
+
+  </form>
+</div> 

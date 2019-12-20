@@ -6,6 +6,7 @@ const multer  = require('multer')
 const fs = require('fs');
 const upload = multer({ dest: 'uploads/' })
 const bodyParser = require('body-parser');
+const path = require('path')
 
 // Our modules
 const stellarModule = require("./StellarModule");
@@ -20,13 +21,22 @@ let userId;
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
-app.use(express.static("/public"));
+app.use(express.static(path.join(__dirname, '../public')));
 
-hbs.registerPartials("views/partials");
+hbs.registerPartials(path.join(__dirname, "/../public/views/partials"));
 
-app.set("views", "views");
+hbs.registerHelper("section", function(name, options) { 
+  // "this" shows the main context object.
+  if (!this._sections) this._sections = {}; // not to override _sections in context.
+     this._sections[name] = options.fn(this); 
+     //console.log(this);
+     return null;
+}); 
+
+app.set("views", path.join(__dirname,"/../public/views"));
 app.set("view options", {layout: "layout/base"});
 app.set("view engine", "hbs");
+
 
 // Login End
 app.get("/login", (req, res) => {
@@ -37,6 +47,7 @@ app.get("/login", (req, res) => {
 
 // Create End
 app.get("/compose", (req, res) => {
+  res.locals.userLoggedIn = true;
   res.render("compose", {
     title: "Welcome to Aries",
     user : userId
@@ -100,6 +111,17 @@ app.post('/newuser', function(req, res) {
   res.redirect('/login');
 });
 
+// Logout Post
+app.post('/logout', function(req, res) {
+  res.redirect('/login');
+});
+
+// Home Post
+app.post('/home', function(req, res) {
+  res.redirect('/home');
+});
+
+
 // Send Post
 app.post('/send', async (req, res)=>{
     // Check if destination user exists
@@ -126,7 +148,6 @@ app.post('/send', async (req, res)=>{
 
 // Compose Post
 app.post('/compose', function(req, res) {
-  res.locals.userComposing = true;
   res.redirect('/compose');
 });
 
