@@ -1,0 +1,18 @@
+{{#section 'head'}}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Aries E-mail</title>
+    <link href="css/readmail.css" rel="stylesheet" type="text/css"/>
+{{/section}}
+
+<h2>{{title}}</h2>
+<p><b>User : </b>{{user}}</p>
+
+<div class="container">
+    <label for="alias">Sender</label>
+    <input type="text" id="alias" name="alias" readonly value={{sender}}>
+
+    <label for="body">Body</label>
+    <textarea id="body" name="body" style="height:200px" readonly>{{message}}</textarea>
+</div> 

@@ -7,14 +7,36 @@
 {{/section}}
 
 <h2>{{title}}</h2>
-<p><b>User : </b>{{user}}</p>
+
+<div class="card">
+  <img src="images/Aries_ProfilePhoto_01.png" alt="Avatar" class="profileImage">
+  <div class="cardContainer">
+    <h3>User</h3>
+    <h4>{{user}}</h4>
+  </div>
+</div> 
 
 <table>
-    <tr><th>From</th><th>Message</th></tr>
-{{#each mails}}
+    <thead>
     <tr>
-        <td>{{this.from}}</td>
-        <td>{{this.message}}</td>
+        <th>Sender ID</th>
+        <th>Title</th>
+        <th>Date</th>
+        <th>Shame</th>
     </tr>
-{{/each}}
-</table>
+    <thead>
+    <tbody>
+    {{#each mails}}
+    <form action="/readmail" method="POST">
+        <tr>
+            <td>{{this.from}}</td>
+            <td>Arbitrary Title</td>
+            <td>Random Date</td>
+            <input type="hidden" id="hash" name="hash" value={{this.hash}}/>
+            <input type="hidden" id="from" name="from" value={{this.from}}/>
+            <td><button type="submit">Open Mail</button></td>
+        </tr>
+    </form>
+    {{/each}}
+    </tbody>
+<table/>

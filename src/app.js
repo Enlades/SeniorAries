@@ -15,8 +15,13 @@ const ipfsModule = require("./IpfsModule");
 const port = 8080 ;
 const app = express();
 
+const adminPub = "GA2DGZGL2XS2YOMAJCUF74HGIOIWZHYLAESB3EBMB3VJDCO4UAEGAEP6";
+const newUserHash = "6b436d6f7750307a653436505a536574484c7134675247527239346a5869414b";
+
 let userKeyPair;
 let userId;
+let selectedMailSender;
+let selectedMailHash;
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -24,6 +29,10 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
 hbs.registerPartials(path.join(__dirname, "/../public/views/partials"));
+
+hbs.registerHelper("mailOnClick", function(context) { 
+  return 'onClick=console.log("hello");';
+});
 
 hbs.registerHelper("section", function(name, options) { 
   // "this" shows the main context object.
@@ -52,6 +61,22 @@ app.get("/compose", (req, res) => {
     title: "Welcome to Aries",
     user : userId
   })    
+});
+
+// ReadMail End
+app.get('/readmail', async(req, res) =>{
+  res.locals.userLoggedIn = true;
+
+  let mailBody = ipfsModule.GetMailFromHash(selectedMailHash).catch(function(err){
+    console.log(err);
+  }).then(function(messageBody){
+    res.render("readmail", {
+      title: "Welcome to Aries",
+      user : userId,
+      sender : selectedMailSender,
+      message : messageBody
+    });
+  });
 });
 
 // Home End
@@ -98,21 +123,56 @@ app.post('/login', upload.single('pkFile'), async(req, res) => {
     res.redirect('/home');
   }).catch(async(reason) => {
     console.log(reason);
-    
-    await stellarModule.CreateNewStellarAccount(userKeyPair);
 
     res.redirect('/login');
   });
 });
 
+// ReadMail Post
+app.post('/readmail', function(req, res) {
+  selectedMailHash = req.body.hash.substring(0, req.body.hash.length - 1);
+  selectedMailSender = req.body.from;
+  res.redirect('/readmail');
+});
+
 // Createacc Post
-app.post('/newuser', function(req, res) {
+app.post('/newuser', async(req, res) =>{
   stellarModule.CreateRandomKey();
-  res.redirect('/login');
+
+  var keyData = fs.readFileSync('StellarWalletKey_Git.txt');
+
+  userKeyPair = stellarModule.GetKeyPairFromFile(keyData);
+
+  await stellarModule.CreateNewStellarAccount(userKeyPair).catch(function(err){
+    console.log(err);
+    res.redirect('/login');
+  }).then(async()=>{
+    await stellarModule.MakeStellarTransaction(newUserHash, userKeyPair, adminPub)
+    .catch(function(err){
+      console.log(err);
+      res.redirect('/login');
+    }).then(async()=>{
+      stellarModule.GetStellarAccount(userKeyPair.publicKey()).then(async function(accRes){
+        userId = accRes.accountId();
+    
+        res.redirect('/home');
+      }).catch(async(reason) => {
+        console.log(reason);
+    
+        res.redirect('/login');
+      });
+    });
+  })
+
 });
 
 // Logout Post
 app.post('/logout', function(req, res) {
+  userKeyPair = "";
+  userId = "";
+  selectedMailSender = "";
+  selectedMailHash = "";
+
   res.redirect('/login');
 });
 

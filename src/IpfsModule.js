@@ -6,7 +6,7 @@ const bs58 = require('bs58');
 var pair = StellarSdk.Keypair
   .fromSecret('SCRRAIIYLZTZDQ7FKF7H74QBIRSMUD3VYXIS35DFNV4F4ZWOPRIG32QS');
 
-  module.exports.GetMailsFromTransactions = async function GetMailsFromTransactions(transactionsArray){
+module.exports.GetMailsFromTransactions = async function GetMailsFromTransactions(transactionsArray){
 
     return new Promise(async function(res, rej){
         const node = await IPFS.create();
@@ -22,7 +22,16 @@ var pair = StellarSdk.Keypair
     
             const fileBuffer = await node.cat(getIpfsHashFromBytes32(Buffer.from(transactionsArray[i].memo, 'base64').toString('hex')));
 
-            await node.get(getIpfsHashFromBytes32(Buffer.from(transactionsArray[i].memo, 'base64').toString('hex')));
+            let files = await node.get(getIpfsHashFromBytes32(Buffer.from(transactionsArray[i].memo, 'base64').toString('hex')));
+
+            for(var j = 0; j < files.length; j ++){
+                let filesAdded = await node.add({
+                    path: files[j].path,
+                    content: files[j].content.toString('utf8')
+                });
+        
+                await node.pin.add(filesAdded[0].hash);
+            }
 
             console.log('Message :', fileBuffer.toString());
             console.log("");
@@ -30,12 +39,29 @@ var pair = StellarSdk.Keypair
             var bytes  = CryptoJS.AES.decrypt(fileBuffer.toString(), 'C987AFE9531CBD3AF86EF6D436669');
             var plaintext = bytes.toString(CryptoJS.enc.Utf8);
 
-            structuredMails.push({from:transactionsArray[i].source_account, message:plaintext});
+            structuredMails.push({from:transactionsArray[i].source_account
+                , message:plaintext
+                , hash:getIpfsHashFromBytes32(Buffer.from(transactionsArray[i].memo, 'base64').toString('hex'))});
         }
         
         await node.stop();
 
         res(structuredMails);
+    });
+}
+
+module.exports.GetMailFromHash = async function GetMailFromHash(hash){
+    return new Promise(async function(res, rej){
+        const node = await IPFS.create();
+
+        const fileBuffer = await node.cat(hash);
+
+        var bytes  = CryptoJS.AES.decrypt(fileBuffer.toString(), 'C987AFE9531CBD3AF86EF6D436669');
+        var plaintext = bytes.toString(CryptoJS.enc.Utf8);
+
+        await node.stop();
+
+        res(plaintext);
     });
 }
 
