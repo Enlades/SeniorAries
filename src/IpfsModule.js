@@ -24,6 +24,11 @@ module.exports.GetMailsFromTransactions = async function GetMailsFromTransaction
 
             let files = await node.get(getIpfsHashFromBytes32(Buffer.from(transactionsArray[i].memo, 'base64').toString('hex')));
 
+            let transactionDateFull = transactionsArray[i].created_at.toString();
+            let transactionDate = transactionDateFull.split('T')[0];
+            let transactionTime = transactionDateFull.split('T')[1];
+            transactionTime = transactionTime.substring(0, transactionTime.length - 1);
+
             for(var j = 0; j < files.length; j ++){
                 let filesAdded = await node.add({
                     path: files[j].path,
@@ -39,9 +44,13 @@ module.exports.GetMailsFromTransactions = async function GetMailsFromTransaction
             var bytes  = CryptoJS.AES.decrypt(fileBuffer.toString(), 'C987AFE9531CBD3AF86EF6D436669');
             var plaintext = bytes.toString(CryptoJS.enc.Utf8);
 
-            structuredMails.push({from:transactionsArray[i].source_account
-                , message:plaintext
-                , hash:getIpfsHashFromBytes32(Buffer.from(transactionsArray[i].memo, 'base64').toString('hex'))});
+            structuredMails.push({
+                from : transactionsArray[i].source_account
+                , message : plaintext
+                , hash : getIpfsHashFromBytes32(Buffer.from(transactionsArray[i].memo, 'base64').toString('hex'))
+                , date : transactionDate
+                , time : transactionTime}
+            );
         }
         
         await node.stop();

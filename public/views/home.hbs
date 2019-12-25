@@ -9,11 +9,11 @@
 <h2>{{title}}</h2>
 
 <div class="card">
-  <img src="images/Aries_ProfilePhoto_01.png" alt="Avatar" class="profileImage">
-  <div class="cardContainer">
+<img src="images/Aries_ProfilePhoto_01.png" alt="Avatar" class="profileImage">
+<div class="cardContainer">
     <h3>User</h3>
     <h4>{{user}}</h4>
-  </div>
+</div>
 </div> 
 
 <table>
@@ -31,12 +31,18 @@
         <tr>
             <td>{{this.from}}</td>
             <td>Arbitrary Title</td>
-            <td>Random Date</td>
+            <td>{{this.date}}<br>{{this.time}}</td>
             <input type="hidden" id="hash" name="hash" value={{this.hash}}/>
             <input type="hidden" id="from" name="from" value={{this.from}}/>
             <td><button type="submit">Open Mail</button></td>
         </tr>
     </form>
     {{/each}}
+    <tfoot>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tfoot>
     </tbody>
 <table/>

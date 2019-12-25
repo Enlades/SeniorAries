@@ -10,6 +10,12 @@ h2{ text-align: center;}*/
 html{
     height: 100%;
 }
+
+img {
+    width: 256px;
+    height: 256px;
+}
+
 body{
     font-family: 'Roboto', sans-serif;
     font-size: 1rem;
@@ -22,7 +28,9 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #fafafa;
+
+    background-image: url('../images/email-pattern.png');
+    background-repeat: repeat;
 }
 .login-form{
     width: 350px;
@@ -62,6 +70,17 @@ body{
 }
 
 input[type=text] {
+    width: 100%; /* Full width */
+    padding: 12px; /* Some padding */ 
+    border: 1px solid #e3e3e3; /* Gray border */
+    border-radius: 4px; /* Rounded borders */
+    box-sizing: border-box; /* Make sure that padding and width stays in place */
+    margin-top: 6px; /* Add a top margin */
+    margin-bottom: 16px; /* Bottom margin */
+    resize: vertical /* Allow the user to vertically resize the textarea (not horizontally) */
+  }
+
+  input[type=file] {
     width: 100%; /* Full width */
     padding: 12px; /* Some padding */ 
     border: 1px solid #e3e3e3; /* Gray border */

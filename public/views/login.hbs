@@ -9,8 +9,8 @@
 <div class="wrap">
     <form class="login-form" action="/login" method = "post" enctype="multipart/form-data">
         <div class="form-header">
-            <h3>Aries</h3>
-            <p>Decentralised Email Service</p>
+            <h3>Login</h3>
+            <p>Provide Your Key</p>
         </div>
             <!--KeySeed Input-->
             <div class="form-group">
@@ -21,13 +21,19 @@
                 <button class="form-button" type="submit" value="Login">Login</button>
             </div>
     </form>
+    <div class="form-header">
+        <img src="../images/newAriesLogo.png" alt="Aries Logo">
+    </div>
     <form class="login-form" action="/newuser" method = "post">
-        <div class="form-footer">
+        <div class="form-header">
             <h3>Create New Account</h3></h2>
-            <div><p>Alias</p></div>
-            <input type="text" id="alias" name="alias" placeholder="Your alias..">
-
-            <button class="form-button" type="submit" value="Login">Create Account</button>
+            <p>Just One Click</p>
         </div>
+            <div class="form-group">
+                <input type="text" id="alias" name="alias" placeholder="Your alias..">
+            </div>
+            <div class="form-group">
+                <button class="form-button" type="submit" value="Login">Create Account</button>
+            </div>
     </form>
 </div><!--/.wrap-->
