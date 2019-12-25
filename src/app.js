@@ -16,12 +16,13 @@ const port = 8080 ;
 const app = express();
 
 const adminPub = "GA2DGZGL2XS2YOMAJCUF74HGIOIWZHYLAESB3EBMB3VJDCO4UAEGAEP6";
-const newUserHash = "6b436d6f7750307a653436505a536574484c7134675247527239346a5869414b";
 
 let userKeyPair;
 let userId;
 let selectedMailSender;
 let selectedMailHash;
+let selectedProfilePicture = -1;
+let userAlias = "Not Retrieved"
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -32,6 +33,25 @@ hbs.registerPartials(path.join(__dirname, "/../public/views/partials"));
 
 hbs.registerHelper("mailOnClick", function(context) { 
   return 'onClick=console.log("hello");';
+});
+
+hbs.registerHelper("randomProfile", function(context) {
+  let randomNumber = Math.floor(Math.random() * 20 + 1);
+  let result = "";
+
+  if(selectedProfilePicture > 0){
+    randomNumber = selectedProfilePicture;
+  }else{
+    selectedProfilePicture = randomNumber;
+  }
+
+  if(randomNumber < 10){
+    result = "0";
+  }
+
+  result += randomNumber.toString();
+
+  return result;
 });
 
 hbs.registerHelper("section", function(name, options) { 
@@ -101,7 +121,7 @@ app.get("/home", async(req, res) =>{
   
       res.render("home", {
         title : "Welcome to Aries",
-        user : userId,
+        user : userAlias,
         mails : structuredMails
       })
     });
@@ -111,6 +131,8 @@ app.get("/home", async(req, res) =>{
 // Login Post
 app.post('/login', upload.single('pkFile'), async(req, res) => {
   console.log("Login post ");
+
+  await ipfsModule.StartNode();
 
   var keyData = fs.readFileSync(req.file.path);
   fs.unlink(req.file.path, (err) => {console.log(err);});
@@ -131,7 +153,7 @@ app.post('/login', upload.single('pkFile'), async(req, res) => {
 // ReadMail Post
 app.post('/readmail', function(req, res) {
   selectedMailHash = req.body.hash.substring(0, req.body.hash.length - 1);
-  selectedMailSender = req.body.from;
+  selectedMailSender = req.body.from.substring(0, req.body.hash.length - 1);
   res.redirect('/readmail');
 });
 
@@ -147,7 +169,7 @@ app.post('/newuser', async(req, res) =>{
     console.log(err);
     res.redirect('/login');
   }).then(async()=>{
-    await stellarModule.MakeStellarTransaction(newUserHash, userKeyPair, adminPub)
+    await stellarModule.MakeStellarTransactionStringMemo(req.body.alias, userKeyPair, adminPub)
     .catch(function(err){
       console.log(err);
       res.redirect('/login');
@@ -167,13 +189,28 @@ app.post('/newuser', async(req, res) =>{
 });
 
 // Logout Post
-app.post('/logout', function(req, res) {
-  userKeyPair = "";
-  userId = "";
-  selectedMailSender = "";
-  selectedMailHash = "";
+app.post('/logout', async(req, res) =>{
 
-  res.redirect('/login');
+  await ipfsModule.StopNode().catch(function(err){
+    console.log(err);
+
+    userKeyPair = "";
+    userId = "";
+    selectedMailSender = "";
+    selectedMailHash = "";
+    selectedProfilePicture = -1;
+
+    res.redirect('/login');
+  }).then(function(){
+
+    userKeyPair = "";
+    userId = "";
+    selectedMailSender = "";
+    selectedMailHash = "";
+    selectedProfilePicture = -1;
+    
+    res.redirect('/login');
+  });
 });
 
 // Home Post

@@ -3,13 +3,29 @@ const IPFS = require('ipfs');
 const CryptoJS = require('crypto-js');
 const bs58 = require('bs58');
 
+let node;
+
 var pair = StellarSdk.Keypair
   .fromSecret('SCRRAIIYLZTZDQ7FKF7H74QBIRSMUD3VYXIS35DFNV4F4ZWOPRIG32QS');
+
+module.exports.StartNode = async function StartNode(){
+    return new Promise(async (res, rej)=>{
+        node = await IPFS.create();
+        res();
+    })
+}
+
+module.exports.StopNode = async function StopNode(){
+    return new Promise(async (res, rej)=>{
+        await node.stop();
+        res();
+    })
+}
 
 module.exports.GetMailsFromTransactions = async function GetMailsFromTransactions(transactionsArray){
 
     return new Promise(async function(res, rej){
-        const node = await IPFS.create();
+        //const node = await IPFS.create();
 
         let structuredMails = [];
 
@@ -53,7 +69,7 @@ module.exports.GetMailsFromTransactions = async function GetMailsFromTransaction
             );
         }
         
-        await node.stop();
+        //await node.stop();
 
         res(structuredMails);
     });
@@ -61,14 +77,14 @@ module.exports.GetMailsFromTransactions = async function GetMailsFromTransaction
 
 module.exports.GetMailFromHash = async function GetMailFromHash(hash){
     return new Promise(async function(res, rej){
-        const node = await IPFS.create();
+        //const node = await IPFS.create();
 
         const fileBuffer = await node.cat(hash);
 
         var bytes  = CryptoJS.AES.decrypt(fileBuffer.toString(), 'C987AFE9531CBD3AF86EF6D436669');
         var plaintext = bytes.toString(CryptoJS.enc.Utf8);
 
-        await node.stop();
+        //await node.stop();
 
         res(plaintext);
     });
@@ -77,7 +93,7 @@ module.exports.GetMailFromHash = async function GetMailFromHash(hash){
 module.exports.CreateAndAddIPFSMail = async function CreateAndAddIPFSMail(mailBody){
 
     return new Promise(async function(res, rej){
-        let node = await IPFS.create();
+        //let node = await IPFS.create();
  
         // Encrypt
         var ciphertext = CryptoJS.AES.encrypt(mailBody, 'C987AFE9531CBD3AF86EF6D436669');
@@ -89,7 +105,7 @@ module.exports.CreateAndAddIPFSMail = async function CreateAndAddIPFSMail(mailBo
 
         await node.pin.add(filesAdded[0].hash);
     
-        await node.stop();
+        //await node.stop();
     
         res( getBytes32FromIpfsHash(filesAdded[0].hash));
     });
