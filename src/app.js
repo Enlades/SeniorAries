@@ -169,7 +169,7 @@ app.post('/newuser', async(req, res) =>{
     console.log(err);
     res.redirect('/login');
   }).then(async()=>{
-    await stellarModule.MakeStellarTransactionStringMemo(req.body.alias, userKeyPair, adminPub)
+    /*await stellarModule.MakeStellarTransactionStringMemo(req.body.alias, userKeyPair, adminPub)
     .catch(function(err){
       console.log(err);
       res.redirect('/login');
@@ -182,7 +182,13 @@ app.post('/newuser', async(req, res) =>{
         console.log(reason);
     
         res.redirect('/login');
-      });
+      });*/
+      stellarModule.GetStellarAccount(userKeyPair.publicKey()).then(async function(accRes){
+        await ipfsModule.StartNode();
+        
+        userId = accRes.accountId();
+    
+        res.redirect('/home');
     });
   })
 
